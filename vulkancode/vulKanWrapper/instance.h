@@ -28,6 +28,8 @@ namespace FF::Wrapper {
 		 
 		[[nodiscard]] VkInstance getInstance() const { return mInstance;  }
 
+		[[nodiscard]] bool getEnableValidationLayer()const { return mEnableValidationLayer; }
+
 	private:
 		VkInstance mInstance{ VK_NULL_HANDLE };
 		bool mEnableValidationLayer{ false };

@@ -8,33 +8,26 @@ void FF::Application::run() {
 }
 
 void FF::Application::initWindow() {
-	glfwInit();
-
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-	mWindow = glfwCreateWindow(WIDTH, HEIGHT, "Window", NULL, NULL);
-
-	if (!mWindow) std::cerr << "error:fail init window" << std::endl;
-
+	mWindow = Wrapper::Window::create(WIDTH, HEIGHT);
 }
 
 void FF::Application::initVulKan(){
 	mInstance = Wrapper::Instance::create(true);
-	mDevice = Wrapper::Device::create(mInstance);
+	mWindowSurface = Wrapper::WindowSurface::create(mInstance, mWindow);
+	mDevice = Wrapper::Device::create(mInstance, mWindowSurface);
 }
 
 void FF::Application::mainLoop() {
-	while (!glfwWindowShouldClose(mWindow)) {
-		glfwPollEvents();
+	while (mWindow->shouldClose()) {
+		mWindow->pollEvents();
 	}
 
 }
 
 void FF::Application::cleanUp() {
 	mDevice.reset();
+	mWindowSurface.reset();
 	mInstance.reset();
-	glfwDestroyWindow(mWindow);
-	glfwTerminate();
+	mWindow.reset();
 }
 

@@ -3,6 +3,8 @@
 #include "../base.h"
 #include "../vulKanWrapper/instance.h"
 #include "../vulKanWrapper/device.h"
+#include "../vulKanWrapper/windows.h"
+#include "../vulKanWrapper/windowSurface.h"
 
 namespace FF {
 	const int WIDTH = 800;
@@ -26,8 +28,10 @@ namespace FF {
 
 
 	private:
-		GLFWwindow* mWindow { nullptr };
+		//GLFWwindow* mWindow { nullptr };
 		Wrapper::Instance::Ptr mInstance;
-		Wrapper::Device::Ptr mDevice{nullptr};
+		Wrapper::Device::Ptr mDevice{ nullptr };
+		Wrapper::Window::Ptr mWindow{ nullptr };
+		Wrapper::WindowSurface::Ptr mWindowSurface{nullptr};
 	};
 }
