@@ -114,13 +114,7 @@ namespace FF::Wrapper {
 
 			queueCreateInfos.push_back(queueCreateInfo);
 		}
-		//VkDeviceQueueCreateInfo queueCreateInfo = {};
-		//queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		//queueCreateInfo.queueFamilyIndex = mGraphicQueueFamily.value();
-		//queueCreateInfo.queueCount = 1;
 
-
-		//queueCreateInfo.pQueuePriorities = &queuePriority;
 		VkPhysicalDeviceFeatures deviceFeratures = {};
 
 		VkDeviceCreateInfo deviceCreateInfo = {};
@@ -128,7 +122,8 @@ namespace FF::Wrapper {
 		deviceCreateInfo.pQueueCreateInfos = queueCreateInfos.data();
 		deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 		deviceCreateInfo.pEnabledFeatures = &deviceFeratures;
-		deviceCreateInfo.enabledExtensionCount = 0;
+		deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(deviceRequiredExtenstions.size());
+		deviceCreateInfo.ppEnabledExtensionNames = deviceRequiredExtenstions.data();
 
 		if (mInstance->getEnableValidationLayer()) {
 			deviceCreateInfo.enabledLayerCount = static_cast<uint32_t> (validationLayers.size());
