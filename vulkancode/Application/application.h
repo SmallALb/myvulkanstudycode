@@ -6,7 +6,8 @@
 #include "../vulKanWrapper/windows.h"
 #include "../vulKanWrapper/windowSurface.h"
 #include "../vulKanWrapper/swapChain.h"
-
+#include "../vulKanWrapper/shader.h"
+#include "../vulKanWrapper/pipline.h"
 namespace FF {
 	const int WIDTH = 800;
 	const int HEIGHT = 600;
@@ -26,7 +27,7 @@ namespace FF {
 
 		void cleanUp();
 
-
+		void createPipeline();
 
 	private:
 		//GLFWwindow* mWindow { nullptr };
@@ -35,5 +36,6 @@ namespace FF {
 		Wrapper::Window::Ptr mWindow{ nullptr };
 		Wrapper::WindowSurface::Ptr mWindowSurface{nullptr};
 		Wrapper::SwapChain::Ptr mSwapChain{ nullptr };
+		Wrapper::Pipeline::Ptr mPipeline{nullptr};
 	};
 }
