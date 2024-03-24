@@ -41,6 +41,39 @@ namespace FF::Wrapper {
 
 		mBlendState.attachmentCount = static_cast<uint32_t>(mBlendAttachmentStates.size());
 		mBlendState.pAttachments = mBlendAttachmentStates.data();
+
+		if (mLayout != VK_NULL_HANDLE) {
+			vkDestroyPipelineLayout(mDevice->getDevice(), mLayout, nullptr);
+		}
+
+		if (vkCreatePipelineLayout(mDevice->getDevice(), &mLayoutState, nullptr, &mLayout) != VK_SUCCESS) {
+			throw std::runtime_error("Error: failed to create pipeline layout");
+		}
+
+		VkGraphicsPipelineCreateInfo pipelineCreateInfo{};
+		pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		pipelineCreateInfo.stageCount = static_cast<uint32_t>(shaderCreateInfos.size());
+		pipelineCreateInfo.pStages = shaderCreateInfos.data();
+		pipelineCreateInfo.pVertexInputState = &mVertexInputsState;
+		pipelineCreateInfo.pViewportState = &mViewportState;
+		pipelineCreateInfo.pRasterizationState = &mRasterState;
+		pipelineCreateInfo.pMultisampleState = &mSampleState;
+		pipelineCreateInfo.pDepthStencilState = nullptr;
+		pipelineCreateInfo.pColorBlendState = &mBlendState;
+		pipelineCreateInfo.layout = mLayout;
+		pipelineCreateInfo.renderPass = VK_NULL_HANDLE;
+		pipelineCreateInfo.subpass = 0;
+
+		pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
+		pipelineCreateInfo.basePipelineIndex = -1;
+
+		if (mPipline != VK_NULL_HANDLE) {
+			vkDestroyPipeline(mDevice->getDevice(), mPipline, nullptr);
+		}
+
+		//if (vkCreateGraphicsPipelines(mDevice->getDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &mPipline) != VK_SUCCESS) {
+		//	throw std::runtime_error("Error: failed to create pipeline");
+		//}
 	}
 
 	void Pipeline::setShaderGroup(const std::vector<Shader::Ptr>& shaderGroup) {

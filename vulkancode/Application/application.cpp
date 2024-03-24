@@ -121,5 +121,11 @@ void FF::Application::createPipeline() {
 	mPipeline->mBlendState.blendConstants[2] = 0.0f;
 	mPipeline->mBlendState.blendConstants[3] = 0.0f;
 
+	mPipeline->mLayoutState.setLayoutCount = 0;
+	mPipeline->mLayoutState.pSetLayouts = nullptr;
+	mPipeline->mLayoutState.pushConstantRangeCount = 0;
+	mPipeline->mLayoutState.pPushConstantRanges = nullptr;
+
+	mPipeline->bulid();
 }
 
