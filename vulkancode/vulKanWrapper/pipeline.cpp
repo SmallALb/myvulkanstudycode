@@ -1,9 +1,9 @@
-#include "pipline.h"
+#include "pipeline.h"
 
 namespace FF::Wrapper {
-	Pipeline::Pipeline(const Device::Ptr& device) {
+	Pipeline::Pipeline(const Device::Ptr& device, const RenderPass::Ptr& renderpass) {
 		mDevice = device;
-
+		mRenderPass = renderpass;
 		mVertexInputsState.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		mAssemblyState.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		mViewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -28,7 +28,7 @@ namespace FF::Wrapper {
 			VkPipelineShaderStageCreateInfo shaderCreateInfo{};
 			shaderCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 			shaderCreateInfo.stage = shader->getShaderStage();
-			shaderCreateInfo.pName = shader->getShaderEntryPoint();
+			shaderCreateInfo.pName = shader->getShaderEntryPoint().c_str();
 			shaderCreateInfo.module = shader->getShaderModule();
 
 			shaderCreateInfos.push_back(shaderCreateInfo);
@@ -55,15 +55,16 @@ namespace FF::Wrapper {
 		pipelineCreateInfo.stageCount = static_cast<uint32_t>(shaderCreateInfos.size());
 		pipelineCreateInfo.pStages = shaderCreateInfos.data();
 		pipelineCreateInfo.pVertexInputState = &mVertexInputsState;
+		pipelineCreateInfo.pInputAssemblyState = &mAssemblyState;
 		pipelineCreateInfo.pViewportState = &mViewportState;
 		pipelineCreateInfo.pRasterizationState = &mRasterState;
 		pipelineCreateInfo.pMultisampleState = &mSampleState;
 		pipelineCreateInfo.pDepthStencilState = nullptr;
 		pipelineCreateInfo.pColorBlendState = &mBlendState;
 		pipelineCreateInfo.layout = mLayout;
-		pipelineCreateInfo.renderPass = VK_NULL_HANDLE;
+		pipelineCreateInfo.renderPass = mRenderPass->getRenderPass();
 		pipelineCreateInfo.subpass = 0;
-
+		
 		pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
 		pipelineCreateInfo.basePipelineIndex = -1;
 
@@ -71,9 +72,9 @@ namespace FF::Wrapper {
 			vkDestroyPipeline(mDevice->getDevice(), mPipline, nullptr);
 		}
 
-		//if (vkCreateGraphicsPipelines(mDevice->getDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &mPipline) != VK_SUCCESS) {
-		//	throw std::runtime_error("Error: failed to create pipeline");
-		//}
+		if (vkCreateGraphicsPipelines(mDevice->getDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &mPipline) != VK_SUCCESS) {
+			throw std::runtime_error("Error: failed to create pipeline");
+		}
 	}
 
 	void Pipeline::setShaderGroup(const std::vector<Shader::Ptr>& shaderGroup) {

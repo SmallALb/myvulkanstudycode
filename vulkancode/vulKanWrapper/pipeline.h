@@ -2,15 +2,16 @@
 #include "shader.h"
 #include "device.h"
 #include "../base.h"
+#include "renderPass.h"
 
 namespace FF::Wrapper {
 	
 	class Pipeline {
 	public:
 		using Ptr = std::shared_ptr<Pipeline>;
-		static Ptr create(const Device::Ptr& device) { return std::make_shared<Pipeline>(device); }
+		static Ptr create(const Device::Ptr& device, const RenderPass::Ptr& renderpass) { return std::make_shared<Pipeline>(device, renderpass); }
 
-		Pipeline(const Device::Ptr &device);
+		Pipeline(const Device::Ptr &device, const RenderPass::Ptr &renderpass);
 		~Pipeline();
 
 		void setShaderGroup(const std::vector<Shader::Ptr>& shaderGroup);
@@ -34,10 +35,16 @@ namespace FF::Wrapper {
 		VkPipelineColorBlendStateCreateInfo mBlendState{};
 		VkPipelineDepthStencilStateCreateInfo mDepthStencilState{};
 		VkPipelineLayoutCreateInfo mLayoutState{};
+
+	public:
+		[[nodiscard]] auto getPipeline() const { return mPipline; }
+
 	private:
 		Device::Ptr mDevice{ nullptr };
 
 		VkPipeline mPipline{ VK_NULL_HANDLE };
+
+		RenderPass::Ptr mRenderPass{ nullptr };
 
 		VkPipelineLayout mLayout{ VK_NULL_HANDLE };
 		std::vector<Shader::Ptr> mShaders{};

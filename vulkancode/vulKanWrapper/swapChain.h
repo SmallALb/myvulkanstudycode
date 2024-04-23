@@ -4,6 +4,7 @@
 #include "device.h"
 #include "windows.h"
 #include "windowSurface.h"
+#include "renderPass.h"
 
 namespace FF::Wrapper {
 
@@ -32,6 +33,18 @@ namespace FF::Wrapper {
 		VkPresentModeKHR chooseSurfacePresentMode(const std::vector<VkPresentModeKHR> &availablePresenstModes);
 
 		VkExtent2D chooseExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+		[[nodiscard]] auto getFormat() const { return mSwapChainFormat; }
+
+		[[nodiscard]] auto getImageCount() const { return mImageCount; }
+
+		[[nodiscard]] auto getSwapChain() const { return mSwapChain; }
+
+		[[nodiscard]] auto getFrameBuffer(const int index) const { return mSwapChainFrameBuffers[index]; }
+
+		[[nodiscard]] auto getExtent() const { return mSwapChainExtent; }
+
+		void createFrameBuffers(const RenderPass::Ptr &renderPass);
 	private:
 		VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels=0);
 
@@ -44,6 +57,8 @@ namespace FF::Wrapper {
 
 		std::vector<VkImage> mSwapChainImages{};
 		std::vector<VkImageView> mSwapChainImageViews{};
+
+		std::vector<VkFramebuffer> mSwapChainFrameBuffers{};
 
 		Device::Ptr mDevice{nullptr};
 		Window::Ptr mWindow{nullptr};

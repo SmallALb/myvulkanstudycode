@@ -68,11 +68,16 @@ namespace FF::Wrapper {
 		for (int i = 0; i < mImageCount; ++i) {
 			mSwapChainImageViews[i] = createImageView(mSwapChainImages[i], mSwapChainFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 		}
+		
 	}
 
 	SwapChain::~SwapChain() {
 		for (auto& imageView : mSwapChainImageViews) {
 			vkDestroyImageView(mDevice->getDevice(), imageView, nullptr);
+		}
+
+		for (auto& frameBuffer : mSwapChainFrameBuffers) {
+			vkDestroyFramebuffer(mDevice->getDevice(), frameBuffer, nullptr);
 		}
 
 		if (mSwapChain != VK_NULL_HANDLE) {
@@ -152,6 +157,26 @@ namespace FF::Wrapper {
 
 		actualExtent.height = std::max(capabilities.minImageExtent.height,
 			std::min(capabilities.maxImageExtent.height, actualExtent.height));
+	}
+
+	void SwapChain::createFrameBuffers(const RenderPass::Ptr& renderPass) {
+		mSwapChainFrameBuffers.resize(mImageCount);
+		for (int i = 0; i < mImageCount; i++) {
+			std::array<VkImageView, 1> attachments = { mSwapChainImageViews[i] };
+			VkFramebufferCreateInfo frameBufferCreateInfo{};
+			frameBufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			frameBufferCreateInfo.renderPass = renderPass->getRenderPass();
+			frameBufferCreateInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+			frameBufferCreateInfo.pAttachments = attachments.data();
+			frameBufferCreateInfo.width = mSwapChainExtent.width;
+			frameBufferCreateInfo.height = mSwapChainExtent.height;
+			frameBufferCreateInfo.layers = 1;
+			
+			if (vkCreateFramebuffer(mDevice->getDevice(), &frameBufferCreateInfo, nullptr, &mSwapChainFrameBuffers[i]) != VK_SUCCESS) {
+				throw std::runtime_error("Error: Failed to create frameBuffer in index " + std::to_string(i));
+			}
+
+		}
 	}
 
 	VkImageView SwapChain::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)

@@ -20,6 +20,11 @@ namespace FF::Wrapper {
 		void pollEvents();
 
 		[[nodiscard]] auto getWindow() const { return mWindow; }
+
+
+	public:
+		bool windowresize{false};
+
 	private:
 		GLFWwindow* mWindow{ nullptr };
 		int mWidth{ 0 };
