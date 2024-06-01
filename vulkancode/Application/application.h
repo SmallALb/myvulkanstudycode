@@ -14,8 +14,16 @@
 #include "../vulKanWrapper/semaphore.h"
 #include "../vulKanWrapper/fence.h"
 #include "../vulKanWrapper/buffer.h"
+#include "../vulKanWrapper/descriptorLayout.h"
+#include "../vulKanWrapper/descriptorPool.h"
+#include "../vulKanWrapper/description.h"
+#include "../vulKanWrapper/descriptorSet.h"
+#include "../uniformManager.h"
 #include "../model.h"
+
 namespace FF {
+
+
 
 	class Application {
 	public:
@@ -25,10 +33,13 @@ namespace FF {
 
 		~Application() = default;
 	private:
+		//初始化窗口
 		void initWindow();
-
+		
+		//初始化vulkan引擎
 		void initVulKan();
-
+		
+		//主要的运行函数
 		void mainLoop();
 
 		void cleanUp();
@@ -42,6 +53,8 @@ namespace FF {
 		void createSyncObjects();
 
 		void cleanupSwapChain();
+
+		//void createDescriptorSetLayout();
 
 		void recreateSwapChain();
 
@@ -64,6 +77,10 @@ namespace FF {
 		std::vector<Wrapper::Semaphore::Ptr> mImageAvailableSemaphores{};
 		std::vector<Wrapper::Semaphore::Ptr> mRenderFinishedSemaphores{};
 		std::vector<Wrapper::Fence::Ptr> mFences{};
+
+		UniformManager::Ptr mUniformManager{nullptr};
+
 		Model::Ptr mModel{ nullptr };
+		VPMatrices mVPMatrices;
 	};
 }

@@ -15,6 +15,16 @@ namespace FF::Wrapper {
 		buffer->updateBufferByStage(pData, size);
 		return buffer;
 	}
+	Buffer::Ptr Buffer::createUniformBuffer(const Device::Ptr& device, VkDeviceSize size, void* pData) {
+		auto buffer = Buffer::create(device, size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+		if (pData != nullptr) {
+			buffer->updateBufferByStage(pData, size);
+		}
+
+		return buffer;
+	}
 	Buffer::Buffer(const Device::Ptr& device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties) {
 		mDevice = device;
 		VkBufferCreateInfo createInfo{};
@@ -41,6 +51,10 @@ namespace FF::Wrapper {
 
 
 		vkBindBufferMemory(mDevice->getDevice(), mBuffer, mBufferMemory, 0);
+
+		mBufferInfo.buffer = mBuffer;
+		mBufferInfo.offset = 0;
+		mBufferInfo.range = size;
 	}
 	Buffer::~Buffer() {
 		if (mBuffer != VK_NULL_HANDLE) {

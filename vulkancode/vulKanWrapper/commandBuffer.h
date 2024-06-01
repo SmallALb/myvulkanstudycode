@@ -24,6 +24,8 @@ namespace FF::Wrapper {
 
 		void bindIndexBuffer(const VkBuffer& buffer);
 
+		void bindDescriptorSet(const VkPipelineLayout layout, const VkDescriptorSet& descriptorSet);
+
 		void drawIndex(size_t indexCount);
 
 		void draw(size_t vertextCount);

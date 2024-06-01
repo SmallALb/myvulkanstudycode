@@ -39,6 +39,7 @@ namespace FF::Wrapper {
 	public:
 		[[nodiscard]] auto getPipeline() const { return mPipline; }
 
+		[[nodiscard]] auto getLayout() const { return mLayout; }
 	private:
 		Device::Ptr mDevice{ nullptr };
 

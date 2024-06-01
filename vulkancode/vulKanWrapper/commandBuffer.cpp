@@ -44,6 +44,10 @@ namespace FF::Wrapper {
 		vkCmdBindIndexBuffer(mCommandBuffer, buffer, 0, VK_INDEX_TYPE_UINT32);
 	}
 
+	void CommandBuffer::bindDescriptorSet(const VkPipelineLayout layout, const VkDescriptorSet& descriptorSet) {
+		vkCmdBindDescriptorSets(mCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, layout, 0, 1, &descriptorSet, 0, nullptr);
+	}
+
 	void CommandBuffer::drawIndex(size_t indexCount) {
 		vkCmdDrawIndexed(mCommandBuffer, indexCount, 1, 0, 0, 0);
 	}

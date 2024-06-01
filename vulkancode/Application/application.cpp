@@ -17,18 +17,23 @@ void FF::Application::initVulKan(){
 	mDevice = Wrapper::Device::create(mInstance, mWindowSurface);
 	mSwapChain = Wrapper::SwapChain::create(mDevice,mWindow, mWindowSurface);
 
+	mWidth = mSwapChain->getExtent().width;
+	mHeight = mSwapChain->getExtent().height;
+
 	mModel = Model::create(mDevice);
 
+	
 	mRenderPass = Wrapper::RenderPass::create(mDevice);
 
 	createRenderPass();
 
 	mSwapChain->createFrameBuffers(mRenderPass);
-	mWidth = mSwapChain->getExtent().width;
-	mHeight = mSwapChain->getExtent().height;
+
+
+	mUniformManager = UniformManager::create();
+	mUniformManager->init(mDevice, mSwapChain->getImageCount());
 
 	mPipeline = Wrapper::Pipeline::create(mDevice, mRenderPass);
-
 	createPipeline();
 
 	mCommandPool = Wrapper::CommandPool::create(mDevice);
@@ -39,14 +44,16 @@ void FF::Application::initVulKan(){
 
 	createSyncObjects();
 	
+	
 }
 
 void FF::Application::mainLoop() {
 	while (mWindow->shouldClose()) {
 		mWindow->pollEvents();
-		
+		mModel->update();
+		mUniformManager->update(mVPMatrices, mModel->getUniform(), mCurrentFrame);
+
 		render();
-		mModel->chace();
 	}
 
 	vkDeviceWaitIdle(mDevice->getDevice());
@@ -151,8 +158,11 @@ void FF::Application::createPipeline() {
 	mPipeline->mBlendState.blendConstants[2] = 0.0f;
 	mPipeline->mBlendState.blendConstants[3] = 0.0f;
 
-	mPipeline->mLayoutState.setLayoutCount = 0;
-	mPipeline->mLayoutState.pSetLayouts = nullptr;
+	mPipeline->mLayoutState.setLayoutCount = 1;
+
+	auto layout = mUniformManager->getDescriptorLayout()->getLayout();
+
+	mPipeline->mLayoutState.pSetLayouts = &layout;
 	mPipeline->mLayoutState.pushConstantRangeCount = 0;
 	mPipeline->mLayoutState.pPushConstantRanges = nullptr;
 
@@ -217,6 +227,8 @@ void FF::Application::createCommandBuffers() {
 
 		mCommandBuffers[i]->bindGraphicPipeline(mPipeline->getPipeline());
 
+		mCommandBuffers[i]->bindDescriptorSet(mPipeline->getLayout(), mUniformManager->getDescriptorset(mCurrentFrame));
+
 		mCommandBuffers[i]->bindVertexBuffer(mModel->getVertexBuffers());
 
 		mCommandBuffers[i]->bindIndexBuffer(mModel->getIndexBuffer()->getBuffer());
@@ -252,6 +264,9 @@ void FF::Application::cleanupSwapChain() {
 	mRenderFinishedSemaphores.clear();
 	mFences.clear();
 }
+
+
+
 
 void FF::Application::recreateSwapChain() {
 	int width = 0, height = 0;

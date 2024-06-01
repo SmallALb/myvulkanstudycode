@@ -80,9 +80,6 @@ namespace FF {
 			return attributeDes;
 		}
 
-		void chace() {
-			mPosition[1] += 0.1;
-		}
 
 		[[nodiscard]] auto getVertexBuffers() const { 
 			return std::vector<VkBuffer>{mPositionBuffer->getBuffer(), mColorBuffer->getBuffer()}; 
@@ -91,6 +88,16 @@ namespace FF {
 		[[nodiscard]] auto getIndexBuffer() const { return mIndexBuffer; }
 
 		[[nodiscard]] auto getIndexCount() const { return mIndexDatas.size(); }
+
+		[[nodiscard]] auto getUniform() const { return mUniform; }
+
+
+		void setModelMatrix(const glm::mat4 matrix) { mUniform.mModelMatrix = matrix; }
+
+		void update() {
+			mUniform.mModelMatrix = glm::rotate(mUniform.mModelMatrix, glm::radians(mAngle), glm::vec3(0.0, 0.0, 1.0));
+			mAngle += 0.01;
+		}
 	private:
 		//std::vector<Vertex> mDatas{}; 
 		std::vector<float> mPosition{};
@@ -101,5 +108,7 @@ namespace FF {
 		Wrapper::Buffer::Ptr mPositionBuffer{ nullptr };
 		Wrapper::Buffer::Ptr mColorBuffer{ nullptr };
 		Wrapper::Buffer::Ptr mIndexBuffer{ nullptr };
+		float mAngle{ 0.0 };
+		ObjectUniform mUniform;
 	};
 }
